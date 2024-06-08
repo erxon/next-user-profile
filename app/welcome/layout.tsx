@@ -1,7 +1,17 @@
-import Link from "next/link";
-import React from "react";
+import React, {Suspense} from "react";
+import { auth } from "@/auth";
+import Navigation from "../ui/navigation";
+import { UserLoading } from "../ui/loading";
+import User from "../ui/user";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default async function Layout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const session = await auth();
+  const user = session?.user;
+
   return (
     <>
       {/* Header */}
@@ -10,12 +20,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </div>
       {/* Side navigation */}
       <div className="grid grid-cols-12">
-        <nav className="col-span-2">
-            <Link href="#">Home</Link>
-            <Link href="#">Profile</Link>
-            <Link href="#">Users</Link>
-        </nav>
-        <div className="col-span-10">{children}</div>
+        <div className="col-span-3 p-5 h-screen hidden lg:block">
+          <Suspense fallback={<UserLoading />}>
+            <User email={user?.email} />
+          </Suspense>
+          <Navigation />
+        </div>
+        <div className="col-span-9">{children}</div>
       </div>
     </>
   );
