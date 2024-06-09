@@ -1,4 +1,4 @@
-import { fetchUserByEmail } from "../lib/data";
+import { fetchUserByEmail, fetchAccount } from "../lib/data";
 import { UserIcon } from "@heroicons/react/20/solid";
 
 export default async function User({
@@ -7,6 +7,8 @@ export default async function User({
   email: string | undefined | null;
 }) {
   const user = await fetchUserByEmail(email);
+  const account = await fetchAccount(user?.id);
+  console.log(account)
 
   if (user) {
     return (
