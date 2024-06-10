@@ -33,12 +33,9 @@ export async function fetchUserByEmail(email: string | undefined | null) {
 export async function fetchAccount(id: string){
   try {
     noStore();
-    const account = await Account.findOne({userId: id});
-
-    console.log(account)
-    return {
-      provider: account.provider
-    }
+    await dbConnect();
+    const account = await Account.findOne({ userId: id });
+    return account;
   } catch (error) {
     return null;
   }

@@ -1,46 +1,26 @@
-import FileUpload from "@/app/ui/components/FileUpload";
-import PasswordField from "@/app/ui/components/PasswordField";
-import TextField from "@/app/ui/components/TextField";
 import React from "react";
+import EditProfileForm from "@/app/ui/edit-profile";
+import { auth } from "@/auth";
+import { fetchAccount, fetchUserByEmail } from "@/app/lib/data";
 
-export default function Page() {
+export default async function Page() {
+  const session = await auth();
+  if (!session?.user) return;
+
+  const user = await fetchUserByEmail(session?.user?.email);
+  const userId = user ? user.id : null;
+  const account = await fetchAccount(userId);
+  const isPasswordEditable: boolean = account && account.provider;
+  const name = user?.name.split(" ");
+
   return (
-    <main className="p-3">
+    <main className="p-3 relative">
       <h1 className="mb-12">Profile</h1>
-      <form>
-        <div className="flex flex-col w-fit">
-          <FileUpload />
-          <div className="w-fit">
-            {/* Name */}
-            <div className="mb-2 flex">
-              <TextField
-                name="firstName"
-                placeholder="First Name"
-                style="mr-2"
-              />
-              <TextField name="lastName" placeholder="Last Name" />
-            </div>
-
-            {/* Email */}
-            <TextField name="email" placeholder="Email" style="mr-2 mb-2" />
-          </div>
-          {/* Password fields */}
-          <div className="mt-3">
-            <p className="font-medium mb-2">Change Password</p>
-            <div className="flex">
-              <PasswordField
-                name="password"
-                placeholder="Password"
-                style="mr-2"
-              />
-              <PasswordField name="password" placeholder="Confirm password" />
-            </div>
-          </div>
-        </div>
-        <button className="inline-block p-2 mt-3 rounded outline outline-1 outline-gray-900 text-black transition hover:bg-gray-900 hover:text-white">
-          Save
-        </button>
-      </form>
+      <EditProfileForm
+        firstName={name[0]}
+        lastName={name[1]}
+        isPasswordEditable={isPasswordEditable}
+      />
     </main>
   );
 }

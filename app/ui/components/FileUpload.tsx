@@ -14,7 +14,7 @@ export default function FileUpload() {
     }
 
     const file = event.target.files[0];
-
+    console.log(file)
     const reader = new FileReader();
 
     reader.onloadend = () => {
@@ -27,7 +27,7 @@ export default function FileUpload() {
   return (
     <div className="mb-6">
       <label htmlFor="avatar" className="font-medium">
-        Upload file
+        Profile picture
       </label>
       <div className="flex items-center">
         <div>

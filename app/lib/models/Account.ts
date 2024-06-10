@@ -16,7 +16,7 @@ export interface Accounts extends mongoose.Document {
 };
 
 const accountSchema = new Schema<Accounts>({
-    userId: String,
+    userId: mongoose.Types.ObjectId,
     type: String,
     provider: String,
     providerAccountId: String,

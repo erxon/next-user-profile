@@ -11,7 +11,10 @@ import {
 import { isEmpty } from "./utilities/for-form";
 import { signIn, signOut } from "@/auth";
 import { AuthError } from "next-auth";
-import { create } from "./database/user-db";
+import { create, update } from "./database/user-db";
+import { auth } from "@/auth";
+import { imageToBuffer, checkFile } from "./utilities/for-form";
+import { v2 as cloudinary } from "cloudinary";
 
 const FormSchema = z.object({
   firstName: z.string({
@@ -40,6 +43,15 @@ export type State = {
     confirmPassword?: string[];
   };
   message?: string | null;
+};
+
+export type UpdateUserState = {
+  errors?: {
+    firstName?: string[];
+    lastName?: string[];
+  };
+  message?: string | null;
+  success?: boolean | null;
 };
 
 export async function createUser(prevState: State, formData: FormData) {
@@ -98,6 +110,95 @@ export async function createUser(prevState: State, formData: FormData) {
   redirect(`/welcome`);
 }
 
+const UpdateUserSchema = z.object({
+  firstName: z.string({
+    invalid_type_error: "Please add first name",
+  }),
+  lastName: z.string({
+    invalid_type_error: "Please add last name",
+  }),
+  avatar: z
+    .any()
+    .refine((file) => file?.size <= 5000000, "Maximum image size is 5 MB")
+    .refine(
+      (file) => ["image/png", "image/jpeg", "image/jpg"].includes(file?.type),
+      "Only accepts image png, jpg, and jpeg formats"
+    )
+    .optional(),
+});
+
+async function imageUpload(file: File) {
+  const { resources: avatar } = await cloudinary.api.resources_by_tag('next-profile-avatar', { context: true });
+
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+
+  const buffer = await imageToBuffer(file);
+
+  //handle image upload here
+  await new Promise((resolve, reject) => {
+    cloudinary.uploader
+      .upload_stream({
+        tags: ["next-profile-avatar"]
+      }, function (error, result) {
+        if (error) {
+          reject(error);
+          return;
+        }
+        resolve(result);
+      })
+      .end(buffer);
+  });
+}
+
+export async function updateUser(
+  prevState: UpdateUserState,
+  formData: FormData
+) {
+  const imageFile = formData.get("avatar") as File;
+  const image = await checkFile(imageFile);
+
+  const validatedFields = UpdateUserSchema.safeParse({
+    firstName: formData.get("firstName") ? formData.get("firstName") : null,
+    lastName: formData.get("lastName") ? formData.get("lastName") : null,
+    avatar: image,
+  });
+
+  if (!validatedFields.success) {
+    console.log(validatedFields.error.flatten().fieldErrors)
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Missing Fields. Failed to Edit User",
+    };
+  }
+
+  const { firstName, lastName, avatar } = validatedFields.data;
+
+  try {
+    const session = await auth();
+    const email = session?.user?.email;
+
+    await update(email, {
+      name: `${firstName} ${lastName}`,
+    });
+    //image upload
+    await imageUpload(avatar);
+    revalidatePath("/profile/welcome");
+
+    return {
+      errors: {},
+      success: true,
+      message: "User was successfully updated",
+    };
+  } catch (error) {
+    console.log(error);
+    return { message: `${error}` };
+  }
+}
+
 export async function authenticate(
   prevState: string | undefined,
   formData: FormData
@@ -123,7 +224,6 @@ export async function authenticate(
     throw error;
   }
 }
-
 
 export async function signOutTrigger() {
   const result = await signOut({ redirect: false, redirectTo: "/login" });
