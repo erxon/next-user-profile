@@ -10,7 +10,7 @@ export default async function Page() {
   const user = await fetchUserByEmail(session?.user?.email);
   const userId = user ? user.id : null;
   const account = await fetchAccount(userId);
-  const isPasswordEditable: boolean = account && account.provider;
+  const withProvider : boolean = account && account.provider;
   const name = user?.name.split(" ");
 
   return (
@@ -19,7 +19,8 @@ export default async function Page() {
       <EditProfileForm
         firstName={name[0]}
         lastName={name[1]}
-        isPasswordEditable={isPasswordEditable}
+        image={user?.image}
+        withProvider={withProvider}
       />
     </main>
   );

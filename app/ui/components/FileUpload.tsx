@@ -4,17 +4,17 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { UserIcon } from "@heroicons/react/20/solid";
 
-export default function FileUpload() {
+export default function FileUpload({ image }: { image: string | undefined }) {
   const [imagePreview, setImagePreview] = useState<
     String | undefined | null | ArrayBuffer
-  >();
+  >(image);
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     if (!event.target.files || !event.target.files[0]) {
       return;
     }
 
     const file = event.target.files[0];
-    console.log(file)
+    console.log(file);
     const reader = new FileReader();
 
     reader.onloadend = () => {
@@ -34,14 +34,14 @@ export default function FileUpload() {
           {imagePreview ? (
             <Image
               className="w-[56px] h-[56px] rounded-full mr-2 avatar"
-              width={0}
-              height={0}
+              width={1000}
+              height={1000}
               src={String(imagePreview)}
               alt="Avatar"
             />
           ) : (
             <div className="bg-gray-400 w-[56px] h-[56px] mr-2 rounded-full">
-                <UserIcon className="text-white" />
+              <UserIcon className="text-white" />
             </div>
           )}
         </div>

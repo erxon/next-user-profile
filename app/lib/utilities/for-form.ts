@@ -1,4 +1,5 @@
 import fs from "fs";
+import { v2 as cloudinary } from "cloudinary";
 
 export function isEmpty(fieldName: string, formData: FormData) {
   if (formData.get(fieldName) === "") {
@@ -20,4 +21,37 @@ export async function checkFile(file: File) {
     return file;
   }
   return undefined;
+}
+
+export async function imageUpload(file: File) {
+  const { resources: avatar } = await cloudinary.api.resources_by_tag(
+    "next-profile-avatar",
+    { context: true }
+  );
+
+  const buffer = await imageToBuffer(file);
+  //handle image upload here
+  try {
+    const uploadAvatarURL: string | undefined = await new Promise(
+      (resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream(
+            {
+              tags: ["next-profile-avatar"],
+            },
+            function (error, result) {
+              if (error) {
+                reject(error);
+                return;
+              }
+              resolve(result?.url);
+            }
+          )
+          .end(buffer);
+      }
+    );
+    return uploadAvatarURL;
+  } catch (error) {
+    throw new Error("Something went wrong");
+  }
 }

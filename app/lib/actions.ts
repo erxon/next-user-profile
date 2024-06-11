@@ -13,8 +13,14 @@ import { signIn, signOut } from "@/auth";
 import { AuthError } from "next-auth";
 import { create, update } from "./database/user-db";
 import { auth } from "@/auth";
-import { imageToBuffer, checkFile } from "./utilities/for-form";
+import { checkFile, imageUpload } from "./utilities/for-form";
 import { v2 as cloudinary } from "cloudinary";
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const FormSchema = z.object({
   firstName: z.string({
@@ -127,33 +133,6 @@ const UpdateUserSchema = z.object({
     .optional(),
 });
 
-async function imageUpload(file: File) {
-  const { resources: avatar } = await cloudinary.api.resources_by_tag('next-profile-avatar', { context: true });
-
-  cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-  });
-
-  const buffer = await imageToBuffer(file);
-
-  //handle image upload here
-  await new Promise((resolve, reject) => {
-    cloudinary.uploader
-      .upload_stream({
-        tags: ["next-profile-avatar"]
-      }, function (error, result) {
-        if (error) {
-          reject(error);
-          return;
-        }
-        resolve(result);
-      })
-      .end(buffer);
-  });
-}
-
 export async function updateUser(
   prevState: UpdateUserState,
   formData: FormData
@@ -168,10 +147,10 @@ export async function updateUser(
   });
 
   if (!validatedFields.success) {
-    console.log(validatedFields.error.flatten().fieldErrors)
     return {
       errors: validatedFields.error.flatten().fieldErrors,
       message: "Missing Fields. Failed to Edit User",
+      success: false,
     };
   }
 
@@ -181,11 +160,25 @@ export async function updateUser(
     const session = await auth();
     const email = session?.user?.email;
 
-    await update(email, {
+    //image upload
+    if (avatar) {
+      const uploadURL = await imageUpload(avatar);
+      const updateResult = await update(email, {
+        image: uploadURL,
+      });
+      const oldImage = updateResult?.image as string;
+      const publicId = oldImage.substring(
+        oldImage.length - 24,
+        oldImage.length - 4
+      );
+      //delete old image
+      await cloudinary.uploader.destroy(publicId);
+    }
+
+    const updateResult = await update(email, {
       name: `${firstName} ${lastName}`,
     });
-    //image upload
-    await imageUpload(avatar);
+
     revalidatePath("/profile/welcome");
 
     return {
