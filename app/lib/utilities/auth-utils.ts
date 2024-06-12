@@ -24,7 +24,7 @@ export async function isEmailExist(email: string) {
   }
 }
 
-export function isPasswordMatch(password: string, confirmPassword: string) {
+export function isPasswordMatch(password?: string, confirmPassword?: string) {
   if (password !== confirmPassword) {
     return false;
   }

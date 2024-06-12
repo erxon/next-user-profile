@@ -11,6 +11,8 @@ interface User {
 interface UpdateParams {
   name?: string;
   image?: string;
+  hash?: string;
+  salt?: string;
 }
 
 export async function create(user: User) {

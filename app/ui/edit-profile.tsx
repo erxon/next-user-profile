@@ -3,10 +3,12 @@
 import FileUpload from "./components/FileUpload";
 import TextField from "./components/TextField";
 import PasswordField from "./components/PasswordField";
-import { useFormState } from "react-dom";
+import { useFormState, useFormStatus } from "react-dom";
 import { updateUser } from "../lib/actions";
 import { v4 as uuidv4 } from "uuid";
 import Image from "next/image";
+import Loading from "./components/Loading";
+import { useState } from "react";
 
 interface EditProfileFormProps {
   withProvider?: boolean;
@@ -15,9 +17,30 @@ interface EditProfileFormProps {
   image?: string;
 }
 
+function Submit() {
+  const status = useFormStatus();
+  return (
+    <div>
+      <button
+        type="submit"
+        className="flex items-center mr-2 text-sm inline-block px-3 py-1 mt-4 rounded outline outline-1 outline-gray-900 text-black transition enabled:hover:bg-gray-900 enabled:hover:text-white disabled:opacity-50"
+        disabled={status.pending}
+      >
+        Save
+        <div hidden={!status.pending} className="ml-2">
+          <Loading />
+        </div>
+      </button>
+    </div>
+  );
+}
+
 export default function EditProfileForm(props: EditProfileFormProps) {
   const initialState = { message: "", success: false, errors: {} };
   const [state, dispatch] = useFormState(updateUser, initialState);
+  const [hide, setHide] = useState(false);
+
+  
 
   return (
     <>
@@ -60,7 +83,7 @@ export default function EditProfileForm(props: EditProfileFormProps) {
           </div>
           {/* Password fields */}
           <div className="mt-3">
-            <p className="font-medium mb-2">Change Panpssword</p>
+            <p className="font-medium mb-2">Change Password</p>
             <div className="flex mb-1">
               <PasswordField
                 name="password"
@@ -69,7 +92,7 @@ export default function EditProfileForm(props: EditProfileFormProps) {
                 disabled={props.withProvider}
               />
               <PasswordField
-                name="password"
+                name="confirmPassword"
                 placeholder="Confirm password"
                 disabled={props.withProvider}
               />
@@ -81,24 +104,20 @@ export default function EditProfileForm(props: EditProfileFormProps) {
             )}
           </div>
         </div>
-        <button
-          type="submit"
-          className="inline-block px-3 py-1 mt-4 rounded outline outline-1 outline-gray-900 text-black transition hover:bg-gray-900 hover:text-white"
-        >
-          Save
-        </button>
+        <Submit />
       </form>
       {state.success ? (
-        <div className="mt-3 text-sm bg-green-300 rounded p-3 shadow w-fit">
+        <div hidden={hide} className="mt-3 text-sm bg-green-300 rounded p-3 shadow w-fit">
           <p>{state.message}</p>
         </div>
       ) : (
         state.message && (
-          <div className="mt-3 text-sm bg-red-300 rounded p-3 shadow w-fit">
+          <div hidden={hide} className="mt-3 text-sm bg-red-300 rounded p-3 shadow w-fit">
             <p>{state.message}</p>
           </div>
         )
       )}
+
     </>
   );
 }

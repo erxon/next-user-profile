@@ -123,6 +123,8 @@ const UpdateUserSchema = z.object({
   lastName: z.string({
     invalid_type_error: "Please add last name",
   }),
+  password: z.string().optional(),
+  confirmPassword: z.string().optional(),
   avatar: z
     .any()
     .refine((file) => file?.size <= 5000000, "Maximum image size is 5 MB")
@@ -143,6 +145,10 @@ export async function updateUser(
   const validatedFields = UpdateUserSchema.safeParse({
     firstName: formData.get("firstName") ? formData.get("firstName") : null,
     lastName: formData.get("lastName") ? formData.get("lastName") : null,
+    password: formData.get("password") ? formData.get("password") : undefined,
+    confirmPassword: formData.get("confirmPassword")
+      ? formData.get("confirmPassword")
+      : undefined,
     avatar: image,
   });
 
@@ -154,7 +160,8 @@ export async function updateUser(
     };
   }
 
-  const { firstName, lastName, avatar } = validatedFields.data;
+  const { firstName, lastName, password, confirmPassword, avatar } =
+    validatedFields.data;
 
   try {
     const session = await auth();
@@ -175,7 +182,23 @@ export async function updateUser(
       await cloudinary.uploader.destroy(publicId);
     }
 
-    const updateResult = await update(email, {
+    //change password
+    console.log(password, confirmPassword)
+    if (password && confirmPassword) {
+      if (!isPasswordMatch(password, confirmPassword)) {
+        return {
+          message: "Password did not match",
+          success: false,
+        };
+      }
+      const encryptedPassword = await hashPassword(password);
+      await update(email, {
+        hash: encryptedPassword.hash,
+        salt: encryptedPassword.salt
+      });
+    }
+
+    await update(email, {
       name: `${firstName} ${lastName}`,
     });
 
