@@ -183,7 +183,6 @@ export async function updateUser(
     }
 
     //change password
-    console.log(password, confirmPassword)
     if (password && confirmPassword) {
       if (!isPasswordMatch(password, confirmPassword)) {
         return {
@@ -210,7 +209,6 @@ export async function updateUser(
       message: "User was successfully updated",
     };
   } catch (error) {
-    console.log(error);
     return { message: `${error}` };
   }
 }

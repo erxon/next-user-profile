@@ -14,7 +14,6 @@ export default function FileUpload({ image }: { image: string | undefined }) {
     }
 
     const file = event.target.files[0];
-    console.log(file);
     const reader = new FileReader();
 
     reader.onloadend = () => {

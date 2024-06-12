@@ -2,12 +2,12 @@ import { signOut } from "@/auth";
 import { fetchUserByEmail, fetchAccount } from "../lib/data";
 import { UserIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
+import { auth } from "@/auth";
+import { signOutTrigger } from "../lib/actions";
 
-export default async function User({
-  email,
-}: {
-  email: string | undefined | null;
-}) {
+export default async function User() {
+  const session = await auth();
+  const email = session?.user?.email;
   const user = await fetchUserByEmail(email);
   const account = await fetchAccount(user?.id);
 
@@ -37,10 +37,7 @@ export default async function User({
         </div>
         <p className="font-semibold text-sm flex-auto w-54">Hi, {user.name}</p>
         <form
-          action={async () => {
-            "use server";
-            await signOut();
-          }}
+          action={signOutTrigger}
         >
           <button className="text-sm bg-gray-100 transition hover:bg-gray-200 p-1 rounded">
             Sign out

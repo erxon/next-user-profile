@@ -7,11 +7,11 @@ import { UsersIcon } from "@heroicons/react/24/outline";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 
-export default function Navigation() {
+export default function Navigation({className} : {className?: string}) {
   const pathname = usePathname();
 
   return (
-    <nav>
+    <nav className={className}>
       <Link
         href="/welcome"
         className={clsx(

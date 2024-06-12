@@ -17,7 +17,7 @@ export async function imageToBuffer(file: File) {
 }
 
 export async function checkFile(file: File) {
-  if (file.size > 0) {
+  if (file && file.size > 0) {
     return file;
   }
   return undefined;

@@ -23,7 +23,7 @@ function Submit() {
     <div>
       <button
         type="submit"
-        className="flex items-center mr-2 text-sm inline-block px-3 py-1 mt-4 rounded outline outline-1 outline-gray-900 text-black transition enabled:hover:bg-gray-900 enabled:hover:text-white disabled:opacity-50"
+        className="w-full md:w-fit flex justify-center items-center mr-2 text-sm inline-block px-3 py-1 mt-4 rounded outline outline-1 outline-gray-900 text-black transition enabled:hover:bg-gray-900 enabled:hover:text-white disabled:opacity-50"
         disabled={status.pending}
       >
         Save
@@ -44,14 +44,14 @@ export default function EditProfileForm(props: EditProfileFormProps) {
 
   return (
     <>
-      <form action={dispatch} className="relative">
-        <div className="flex flex-col w-1/2">
+      <form action={dispatch}>
+        <div className="flex flex-col w-full lg:w-fit">
           {!props.withProvider && <FileUpload image={props.image} />}
 
           <div className="w-full">
             {/* Name */}
-            <div className="mb-2 flex">
-              <div className="w-full mr-2">
+            <div className="mb-2 flex flex-col md:flex-row">
+              <div className="w-full mb-2 md:mr-2">
                 <label htmlFor="firstName" className="text-sm">
                   First name
                 </label>
@@ -84,11 +84,11 @@ export default function EditProfileForm(props: EditProfileFormProps) {
           {/* Password fields */}
           <div className="mt-3">
             <p className="font-medium mb-2">Change Password</p>
-            <div className="flex mb-1">
+            <div className="flex mb-1 flex-col md:flex-row">
               <PasswordField
                 name="password"
                 placeholder="Password"
-                style="mr-2"
+                style="mb-2 md:mr-2"
                 disabled={props.withProvider}
               />
               <PasswordField
@@ -107,12 +107,12 @@ export default function EditProfileForm(props: EditProfileFormProps) {
         <Submit />
       </form>
       {state.success ? (
-        <div hidden={hide} className="mt-3 text-sm bg-green-300 rounded p-3 shadow w-fit">
+        <div className="mt-3 text-sm bg-green-300 rounded p-3 shadow w-full text-center md:w-fit">
           <p>{state.message}</p>
         </div>
       ) : (
         state.message && (
-          <div hidden={hide} className="mt-3 text-sm bg-red-300 rounded p-3 shadow w-fit">
+          <div className="mt-3 text-sm bg-red-300 rounded p-3 shadow w-full text-center md:w-fitx">
             <p>{state.message}</p>
           </div>
         )
