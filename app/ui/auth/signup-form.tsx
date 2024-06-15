@@ -6,7 +6,8 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { useState } from "react";
 import { createUser } from "@/app/lib/actions";
-import { useFormState } from "react-dom";
+import { useFormState, useFormStatus } from "react-dom";
+import Loading from "../components/Loading";
 
 export default function SignupForm() {
   // const initialState = { message: "", passwordError: "", errors: {} };
@@ -17,6 +18,16 @@ export default function SignupForm() {
     password: false,
     confirmPassword: false,
   });
+
+  function SignUp() {
+    const { pending } = useFormStatus();
+    return (
+      <button className="flex justify-center items-center gap-2 bg-teal-900 text-white p-2 rounded mt-3 disabled:opacity-75" disabled={pending} aria-disabled={pending}>
+        Signup
+        {pending && <Loading />}
+      </button>
+    );
+  }
 
   return (
     <>
@@ -153,9 +164,7 @@ export default function SignupForm() {
           </div>
         </div>
 
-        <button className="bg-teal-900 text-white p-2 rounded mt-3">
-          Signup
-        </button>
+        <SignUp />
 
         {/* Error Message */}
         <div id="message" aria-live="polite" aria-atomic="true">

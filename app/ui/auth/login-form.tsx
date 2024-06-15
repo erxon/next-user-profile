@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import EmailIcon from "@mui/icons-material/Email";
 import KeyIcon from "@mui/icons-material/Key";
@@ -7,11 +7,28 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { authenticate } from "@/app/lib/actions";
+import Loading from "../components/Loading";
 
 export default function LoginForm() {
   const [errorMessage, dispatch] = useFormState(authenticate, undefined);
   const [showPassword, setShowPassword] = useState(false);
-  
+
+  function LoginButton() {
+    const { pending } = useFormStatus();
+
+    return (
+      <button
+        type="submit"
+        className="mt-4 w-full bg-teal-900 text-white p-2 rounded flex justify-center items-center gap-2 disabled:opacity-75"
+        aria-disabled={pending}
+        disabled={pending}
+      >
+        Log in
+        {pending && <Loading />}
+      </button>
+    );
+  }
+
   return (
     <>
       <form action={dispatch}>
@@ -47,10 +64,7 @@ export default function LoginForm() {
           </div>
           <LoginButton />
         </div>
-        <div
-          aria-live="polite"
-          aria-atomic="true"
-        >
+        <div aria-live="polite" aria-atomic="true">
           {errorMessage && (
             <>
               <p className="text-sm text-red-500">{errorMessage}</p>
@@ -59,19 +73,5 @@ export default function LoginForm() {
         </div>
       </form>
     </>
-  );
-}
-
-function LoginButton() {
-  const { pending } = useFormStatus();
-
-  return (
-    <button
-      type="submit"
-      className="mt-4 w-full bg-teal-900 text-white p-2 rounded"
-      aria-disabled={pending}
-    >
-      Log in
-    </button>
   );
 }

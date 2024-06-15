@@ -15,6 +15,7 @@ import { create, update } from "./database/user-db";
 import { auth } from "@/auth";
 import { checkFile, imageUpload } from "./utilities/for-form";
 import { v2 as cloudinary } from "cloudinary";
+import {signIn as signInWithProvider} from "@/auth-with-provider";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -237,6 +238,10 @@ export async function authenticate(
     }
     throw error;
   }
+}
+
+export async function signInWithGoogle(){
+  await signInWithProvider("google");
 }
 
 export async function signOutTrigger() {
