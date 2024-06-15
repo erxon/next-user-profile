@@ -45,10 +45,11 @@ export async function update(
 export async function getAll(query: string) {
   try {
     await dbConnect();
-    
+
     let users;
-    if(query) {
-      users = await User.find({name: query});
+    if (query) {
+      const regex = new RegExp(String.raw`${query}`, "i");
+      users = await User.find({ name: regex });
     } else {
       users = await User.find();
     }

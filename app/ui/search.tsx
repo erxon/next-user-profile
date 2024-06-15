@@ -3,13 +3,15 @@
 import TextField from "./components/TextField";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { useDebouncedCallback } from "use-debounce";
 
 export default function Search() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
 
-  function handleSearchTerm(term: string) {
+  const handleSearchTerm = useDebouncedCallback((term: string) => {
+    console.log("Searching...", term)
     const params = new URLSearchParams(searchParams);
     if(term) {
         params.set("query", term);
@@ -17,7 +19,7 @@ export default function Search() {
         params.delete("query");
     }
     replace(`${pathname}?${params.toString()}`);
-  }
+  }, 300);
 
   return (
     <div className="relative w-full md:w-1/2 mb-4">
