@@ -34,21 +34,21 @@ export default function LoginForm() {
       <form action={dispatch}>
         <div className="flex flex-col">
           <div className="relative">
-            <EmailIcon className="pointer-events-none absolute top-5 left-1 transform -translate-y-1/2 left-3" />
+            <EmailIcon className="pointer-events-none text-gray-700 absolute top-5 left-1 transform -translate-y-1/2 left-3" />
             <input
               name="email"
               type="email"
               placeholder="Email"
-              className="w-full mb-2 p-2 pl-10 outline outline-1 opacity-50 rounded focus:outline-teal-900 focus:outline-2 focus:opacity-100"
+              className="w-full mb-2 p-2 pl-10 outline outline-1 outline-gray-300 rounded focus:outline-teal-900 focus:outline-2"
             />
           </div>
           <div className="relative">
-            <KeyIcon className="pointer-events-none w-6 h-6 absolute top-5 left-1 transform -translate-y-1/2 left-3" />
+            <KeyIcon className="pointer-events-none text-gray-700 w-6 h-6 absolute top-5 left-1 transform -translate-y-1/2 left-3" />
             <input
               name="password"
               type={showPassword ? "text" : "password"}
               placeholder="Password"
-              className="peer w-full block p-2 pl-10 appearance-none outline outline-1 opacity-50 rounded focus:outline-teal-900 focus:outline-2 focus:opacity-100"
+              className="peer w-full block p-2 pl-10 appearance-none outline outline-1 outline-gray-300 rounded focus:outline-teal-900 focus:outline-2"
             />
             <button
               onClick={() => setShowPassword(!showPassword)}
