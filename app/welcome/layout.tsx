@@ -13,7 +13,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {/* Header */}
       <div className="h-16 flex items-center pl-10 lg:shadow-sm">
         <p className="font-bold text-xl grow">Next Skeleton Project</p>
-        <UserIcon className="w-6 h-6" />
         <form action={signOutTrigger}>
           <button className="block mx-5 p-1.5 rounded bg-gray-200 text-sm ">
             Sign out

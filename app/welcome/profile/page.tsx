@@ -15,7 +15,7 @@ export default async function Page() {
 
   return (
     <main className="p-3 relative">
-      <h1 className="mb-12">Profile</h1>
+      <h1 className="mb-3">Profile</h1>
       <EditProfileForm
         firstName={name[0]}
         lastName={name[1]}

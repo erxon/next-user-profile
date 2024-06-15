@@ -1,3 +1,5 @@
+import { ReactEventHandler } from "react";
+
 export interface FieldTypes {
     type?: string;
     name: string;
@@ -5,4 +7,5 @@ export interface FieldTypes {
     style?: string;
     disabled?: boolean;
     defaultValue?: string;
+    handleChange?: (term: string) => void;
 }

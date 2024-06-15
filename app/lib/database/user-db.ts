@@ -26,11 +26,33 @@ export async function create(user: User) {
   }
 }
 
-export async function update(email: string | null | undefined, updates: UpdateParams) {
+export async function update(
+  email: string | null | undefined,
+  updates: UpdateParams
+) {
   try {
     await dbConnect();
-    const updateUser = await User.findOneAndUpdate({ email: email }, {...updates});
+    const updateUser = await User.findOneAndUpdate(
+      { email: email },
+      { ...updates }
+    );
     return updateUser;
+  } catch (error) {
+    throw new Error(`${error}`);
+  }
+}
+
+export async function getAll(query: string) {
+  try {
+    await dbConnect();
+    
+    let users;
+    if(query) {
+      users = await User.find({name: query});
+    } else {
+      users = await User.find();
+    }
+    return users;
   } catch (error) {
     throw new Error(`${error}`);
   }
