@@ -24,8 +24,8 @@ export default function FileUpload({ image }: { image: string | undefined }) {
       return;
     }
 
-    if (event.target.files && event.target.files[0]?.size > 1000000) {
-      setErrors({...errors, sizeError: "File size greater than 1MB"});
+    if (event.target.files && event.target.files[0]?.size > 5000000) {
+      setErrors({...errors, sizeError: "File size greater than 5MB"});
       return;
     }
 
