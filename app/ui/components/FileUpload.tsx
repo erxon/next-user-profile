@@ -8,8 +8,29 @@ export default function FileUpload({ image }: { image: string | undefined }) {
   const [imagePreview, setImagePreview] = useState<
     String | undefined | null | ArrayBuffer
   >(image);
+
+  const [errors, setErrors] = useState({
+    sizeError: "",
+    typeError: ""
+  });
+
+  function validateFile(fileName: string) {
+    const fileType = /^.*\.(jpg|jpeg|png)$/i;
+    return fileType.test(fileName);
+  }
+
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
     if (!event.target.files || !event.target.files[0]) {
+      return;
+    }
+
+    if (event.target.files && event.target.files[0]?.size > 1000000) {
+      setErrors({...errors, sizeError: "File size greater than 1MB"});
+      return;
+    }
+
+    if (!validateFile(event.target.files[0].name)) {
+      setErrors({...errors, typeError: "Only accepts file with types .jpg, .png, or .jpeg"});
       return;
     }
 
@@ -59,6 +80,8 @@ export default function FileUpload({ image }: { image: string | undefined }) {
           <p className="text-gray-700 text-sm mt-1">PNG/JPG/JPEG</p>
         </div>
       </div>
+      {errors && errors.sizeError && <p className="text-sm text-red-500">{errors.sizeError}</p>}
+      {errors && errors.typeError && <p className="text-sm text-red-500">{errors.typeError}</p>}
     </div>
   );
 }

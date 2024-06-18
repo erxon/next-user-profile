@@ -56,6 +56,7 @@ export type UpdateUserState = {
   errors?: {
     firstName?: string[];
     lastName?: string[];
+    avatar?: string[];
   };
   message?: string | null;
   success?: boolean | null;
@@ -128,7 +129,7 @@ const UpdateUserSchema = z.object({
   confirmPassword: z.string().optional(),
   avatar: z
     .any()
-    .refine((file) => file?.size <= 5000000, "Maximum image size is 5 MB")
+    .refine((file) => file?.size <= 1000000, "Maximum image size is 1 MB")
     .refine(
       (file) => ["image/png", "image/jpeg", "image/jpg"].includes(file?.type),
       "Only accepts image png, jpg, and jpeg formats"
@@ -156,7 +157,7 @@ export async function updateUser(
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
-      message: "Missing Fields. Failed to Edit User",
+      message: "Something went wrong",
       success: false,
     };
   }

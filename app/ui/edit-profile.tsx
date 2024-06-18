@@ -47,7 +47,9 @@ export default function EditProfileForm(props: EditProfileFormProps) {
       <form action={dispatch}>
         <div className="flex flex-col w-full lg:w-fit">
           {!props.withProvider && <FileUpload image={props.image} />}
-
+          {
+            state.errors && state.errors.avatar && <p className="text-red-500 text-sm">{state.errors.avatar}</p>
+          }
           <div className="w-full">
             {/* Name */}
             <div className="mb-2 flex flex-col md:flex-row">
@@ -112,7 +114,7 @@ export default function EditProfileForm(props: EditProfileFormProps) {
         </div>
       ) : (
         state.message && (
-          <div className="mt-3 text-sm bg-red-300 rounded p-3 shadow w-full text-center md:w-fitx">
+          <div className="mt-3 text-sm bg-red-300 rounded p-3 shadow w-full text-center md:w-fit">
             <p>{state.message}</p>
           </div>
         )
