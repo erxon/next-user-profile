@@ -1,11 +1,7 @@
-# Getting Started  
-
-```bash
-npm install
-```
-
 # Next JS 14 + Cloudinary
 A Next JS 14 starter that uses Cloudinary. Setting up Cloudinary, and file handling in new React Server Components.
+
+<img src="./public/next-skeleton-cover.png" />
 
 # Environment Variables
 
