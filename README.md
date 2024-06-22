@@ -32,7 +32,10 @@ npm install mongoose
 ```
 npm install mongodb
 ```
-
+### Cloudinary
+```
+npm install cloudinary
+```
 # Working with Image
 
 ### lib/actions.ts
