@@ -38,6 +38,7 @@ npm install cloudinary
 ```
 # Working with Image
 
+
 ### lib/actions.ts
 
 In this project, I have used Cloudinary to store image.
